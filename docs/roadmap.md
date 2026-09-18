@@ -15,10 +15,14 @@ worktree). **Этот SDK не знает про relsy** — ни про `Branch
 
 ## M1. Транспорт и общая инфраструктура ошибок
 
-- `Transport` — тонкий слой поверх `symfony/http-client`: два базовых URL (auth — всегда
-  `https://api.kontur.ru`, data — `https://ofd-api.kontur.ru` прод / `https://ofd-project.kontur.ru:11002`
-  тест, оба конфигурируемые, не хардкод), заголовки `Authorization: auth.sid <sid>` +
-  `X-Kontur-Ofd-ApiKey: <key>` на каждый запрос к data-хосту (auth-хост их не требует).
+- `Transport` — тонкий слой поверх `psr/http-client`+`psr/http-factory` (не конкретной библиотеки
+  вроде `symfony/http-client`/Guzzle — SDK не должен навязывать потребителю свой HTTP-стек и
+  тащить в него второй конкретный клиент рядом с уже стоящим; конкретную реализацию берём через
+  `php-http/discovery`, либо потребитель инжектирует свою в конструктор клиента). Два базовых URL
+  (auth — всегда `https://api.kontur.ru`, data — `https://ofd-api.kontur.ru` прод /
+  `https://ofd-project.kontur.ru:11002` тест, оба конфигурируемые, не хардкод), заголовки
+  `Authorization: auth.sid <sid>` + `X-Kontur-Ofd-ApiKey: <key>` на каждый запрос к data-хосту
+  (auth-хост их не требует).
 - Разбор тела ошибки (`{errorCodeId, errorCode, moreInfo, userMessage}`) в исключения:
   - `KonturOfdException` — базовое.
   - `AuthenticationException` (`401002`/`401003` — не хватает/протухла `auth.sid`, не хватает/неверен
