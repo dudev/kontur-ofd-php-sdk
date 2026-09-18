@@ -1,6 +1,7 @@
 # Roadmap — верхнеуровневые задачи
 
-Статус: планирование, кода ещё нет. Цель — не тонкая обёртка над HTTP (голые массивы туда-обратно),
+Статус: M1–M4 реализованы (2026-09-18), M5 не начат, M6 частично (юнит-тесты есть, интеграционный
+набор — нет). Цель — не тонкая обёртка над HTTP (голые массивы туда-обратно),
 а настоящий SDK: типизированные объекты на входе/выходе, разделение транспорта и домена, свои
 исключения по кодам ошибок API, отдельная пагинация — тем же принципом, что уже сложился в
 `packages/yclients-php-sdk` (`Transport.php`/`Http/RawResponse.php`, `<Entity>/<Entity>Api.php`,
@@ -13,7 +14,7 @@ worktree). **Этот SDK не знает про relsy** — ни про `Branch
 чеков в БД, ни про `OfdAuthSettings`. Его дело — чистый типизированный клиент API, который потом
 использует `relsy-backend` (и потенциально что угодно ещё).
 
-## M1. Транспорт и общая инфраструктура ошибок
+## ~~M1~~. Транспорт и общая инфраструктура ошибок — реализовано
 
 - `Transport` — тонкий слой поверх `psr/http-client`+`psr/http-factory` (не конкретной библиотеки
   вроде `symfony/http-client`/Guzzle — SDK не должен навязывать потребителю свой HTTP-стек и
@@ -35,27 +36,30 @@ worktree). **Этот SDK не знает про relsy** — ни про `Branch
   - Не мапленный код — общий `KonturOfdException` с сырым `errorCodeId` внутри, не падать с
     generic HTTP-исключением без контекста.
 
-## M2. Аутентификация — примитивы, не решение "как это сделано у relsy"
+## ~~M2~~. Аутентификация — примитивы, не решение "как это сделано у relsy" — реализовано
 
 SDK не реализует GOST-крипто и не решает, откуда берётся `auth.sid` — три способа из
 `ofd-receipts-design.md` §3 (пароль на backend / пароль на фронте / ЭП на фронте) — это
 архитектура вызывающего кода. SDK даёт три независимых примитива, вызывающий использует нужный:
 
-- `authenticateByPass(login, password): Sid` — `POST /auth/authenticate-by-pass`.
-- `withSid(string $sid): self` (или конструктор клиента прямо с готовым `Sid`) — для случая, когда
-  `Sid` уже получен снаружи (не важно, паролем или сертификатом, не важно кем).
-- `authenticateByCert(base64Certificate): EncryptedKeyResult` +
-  `approveCert(thumbprint, decryptedBytes): Sid` — только сетевые вызовы, само шифрование/
-  расшифровка (ГОСТ 28147-89) — забота вызывающего (см. открытый вопрос 2 ниже).
+- `AuthClient::authenticateByPass(login, password): AuthResult` — `POST /auth/authenticate-by-pass`.
+- `KonturOfdClient::withSid(string $sid)`/`getSid()` — для случая, когда `Sid` уже получен снаружи
+  (не важно, паролем или сертификатом, не важно кем).
+- `AuthClient::authenticateByCert(base64Certificate): EncryptedKeyResult` +
+  `approveCert(approveCertUrl, decryptedBytes): AuthResult` — только сетевые вызовы, само
+  шифрование/расшифровка (ГОСТ 28147-89) — забота вызывающего (см. открытый вопрос 2 ниже).
+  `approveCert()` принимает готовый `approveCertUrl` из `EncryptedKeyResult` (уже абсолютный URL с
+  `thumbprint` в query, отданный сервером), не собирает путь сам — версия API в этом пути у
+  Контур.ОФД плавает (`v5.9` в примере документации), идти по ссылке надёжнее, чем угадывать.
 
-## M3. Организации и кассы
+## ~~M3~~. Организации и кассы — реализовано
 
 - `OrganizationsApi::list(): Organization[]`, `::get(id): Organization`.
 - `CashboxesApi::list(organizationId): Cashbox[]`, `::get(organizationId, kktRegId): Cashbox`.
 - Типизированные `Organization`/`Cashbox`/`FiscalDrive` value-объекты (не ассоц-массивы) —
   `Cashbox` включает `addresses[]`/`fiscalDrives[]`/`permissionFrom`/`permissionTo` как есть в API.
 
-## M4. Документы — основная ценность SDK
+## ~~M4~~. Документы — основная ценность SDK — реализовано
 
 - `DocumentsApi::byPeriod(organizationId, kktRegId, dateFrom, dateTo, types?, offset?, limit?)` —
   одна страница, типизированный `DocumentsPage` (`documents`, `nextOffset`).
@@ -68,10 +72,13 @@ SDK не реализует GOST-крипто и не решает, откуда
 - `DocumentsApi::get(organizationId, kktRegId, documentId): Document`.
 - Типизированная модель на каждый тип документа из `Structures/` (`ReceiptOrBso`, `OpenShift`,
   `CloseShift`, `CurrentStateReport`, `FiscalReport`, `FiscalReportCorrection`, `CloseArchive`) —
-  общий `Document` как discriminated union/интерфейс с `getType(): DocumentType`, не один
-  raw-массив на всё. `ReceiptOrBso` — приоритет (`receiptCode`/`bsoCode`, `items[]`, ~15
-  `nds*`/`ndsCalculated*` полей, `fiscalSign` — **int64/string, не int**, превышает 2^31 в реальных
-  данных); остальные типы — заготовки по мере надобности, не блокируют первый релиз.
+  общий `Document`-интерфейс с `getType(): DocumentType`, не один raw-массив на всё. `Receipt` —
+  приоритет (`receiptCode`/`bsoCode` → `DocumentType::Receipt`/`Bso`/`...Correction`, `items[]`,
+  подмножество `nds*`/`ndsCalculated*` полей — только непустые, в `ndsBreakdown`), `fiscalSign` —
+  обычный PHP `int` (не строка — на 64-битном PHP, единственная поддерживаемая архитектура для
+  `php: ^8.2` в этом composer.json, диапазона хватает даже с запасом на значения из реальных
+  данных, превышающие 2^31); остальные типы документа — `GenericDocument` (сырые поля через
+  `getRawData()`), заготовка по мере надобности, не блокирует первый релиз.
 - **Не реализовывать v1 (`tickets/*`)** — устаревшие, по документации "временно поддерживаются",
   `v2` их полностью покрывает и умеет то, чего `v1` не умеет (постраничная выдача,
   `receiveDateTimeUtc`).
@@ -84,8 +91,9 @@ SDK не реализует GOST-крипто и не решает, откуда
 
 ## M6. Тесты
 
-- Юнит-тесты на каждый `*Api` класс — мокать `Transport`/HTTP-слой (PSR-18-стиль, как
-  `yclients-php-sdk`), не ходить в сеть.
+- ~~Юнит-тесты на каждый `*Api` класс~~ — сделано: `Http\Mock\Client` (PSR-18) +
+  `Nyholm\Psr7\Factory\Psr17Factory` (PSR-17), без сети, 39 тестов на M1–M4 целиком, включая оба
+  условия остановки `byPeriodAll()` (см. `tests/Document/DocumentsApiTest.php`).
 - Опционально — интеграционный набор против тестовой площадки Контур.ОФД
   (`https://ofd-project.kontur.ru:11002/`, есть демо-организации с автогенерируемыми документами,
   доступ бесплатный) под реальными кредами из переменных окружения, не запускается в обычном CI
@@ -94,15 +102,17 @@ SDK не реализует GOST-крипто и не решает, откуда
 
 ## Открытые вопросы
 
-1. **Формат типизированных моделей** — `readonly class` с публичными свойствами (как
-   `PaymentItemResponseDto` в relsy-backend) или геттеры? Голосую за `readonly class` + именованные
-   конструкторы `fromArray()`/`fromJson()` — проще тестировать, не тянет PSR-специфичные интерфейсы.
+1. ~~Формат типизированных моделей~~ — **решено**: `readonly class` с публичными свойствами +
+   именованный конструктор `fromArray()` (без интерфейса сериализации — не нужен, `fromArray()`
+   вызывается явно из `*Api`-классов).
 2. **Кто отвечает за ГОСТ-крипто в M2** — SDK принципиально не берёт на себя ГОСТ 28147-89
    (расшифровка `EncryptedKey`/подготовка байтов для `approve-cert`), это либо вызывающий код (уже
    решено для relsy — браузерная церемония, см. `ofd-receipts-design.md` §3), либо отдельный
    опциональный адаптер (`require-dev`/`suggest`) для тех, кто всё же захочет делать это на PHP
    (CryptoPro CSP CLI/`gost-engine`) — заводить только если реально понадобится, не заранее.
-3. **Пагинация — итератор или готовый массив** — `byPeriodAll()`, жадно собирающий всё в память (как
-   `kontur-ofd-python-gist/kontur.py`), или `\Generator`, отдающий страницы/документы лениво?
-   Голосую за `\Generator` — период синхронизации может быть большим, копить всё в памяти
-   не обязательно.
+   Всё ещё открыт — адаптер не заводился.
+3. ~~Пагинация — итератор или готовый массив~~ — **решено**: `\Generator` (`byPeriodAll()`), не
+   жадный массив — период синхронизации может быть большим, копить всё в памяти не обязательно.
+4. **Интеграционные тесты против тестовой площадки** (M6) — не начаты. Понадобится реальный ключ
+   интегратора и логин на тестовую площадку (`GetAccess.rst`) — блокирует не архитектура, а
+   организационный шаг получения доступа.
