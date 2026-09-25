@@ -48,5 +48,21 @@ foreach ($client->statistics()->cashboxByDays($organizationId, $kktRegId, $from,
 ```bash
 composer install
 vendor/bin/phpstan analyse
-vendor/bin/phpunit
+vendor/bin/phpcs
+vendor/bin/phpunit                         # unit tests, no network
 ```
+
+Integration tests call the real API (the Kontur.OFD test site by default) and are skipped unless
+credentials are set:
+
+```bash
+export KONTUR_OFD_API_KEY=...              # integrator key
+export KONTUR_OFD_LOGIN=... KONTUR_OFD_PASSWORD=...   # or KONTUR_OFD_SID=... instead
+# export KONTUR_OFD_DATA_BASE_URI=...      # optional, defaults to https://ofd-project.kontur.ru:11002
+vendor/bin/phpunit --testsuite integration --display-skipped
+```
+
+In GitHub Actions the same suite runs from the `Integration` workflow (on push to `main`, on pull
+requests, manually and weekly) with
+`KONTUR_OFD_API_KEY`/`KONTUR_OFD_LOGIN`/`KONTUR_OFD_PASSWORD` repository secrets and an optional
+`KONTUR_OFD_DATA_BASE_URI` variable; without the secrets it does nothing.
