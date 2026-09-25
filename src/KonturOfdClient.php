@@ -9,6 +9,7 @@ use Dudev\KonturOfdPhpSdk\Cashbox\CashboxesApi;
 use Dudev\KonturOfdPhpSdk\Document\DocumentsApi;
 use Dudev\KonturOfdPhpSdk\Http\Transport;
 use Dudev\KonturOfdPhpSdk\Organization\OrganizationsApi;
+use Dudev\KonturOfdPhpSdk\Statistics\StatisticsApi;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -29,6 +30,7 @@ final class KonturOfdClient
     private readonly OrganizationsApi $organizations;
     private readonly CashboxesApi $cashboxes;
     private readonly DocumentsApi $documents;
+    private readonly StatisticsApi $statistics;
 
     public function __construct(
         string $apiKey,
@@ -52,6 +54,7 @@ final class KonturOfdClient
         $this->organizations = new OrganizationsApi($this->transport);
         $this->cashboxes = new CashboxesApi($this->transport);
         $this->documents = new DocumentsApi($this->transport);
+        $this->statistics = new StatisticsApi($this->transport);
     }
 
     public function auth(): AuthClient
@@ -72,6 +75,11 @@ final class KonturOfdClient
     public function documents(): DocumentsApi
     {
         return $this->documents;
+    }
+
+    public function statistics(): StatisticsApi
+    {
+        return $this->statistics;
     }
 
     /** Устанавливает `auth.sid`, полученный любым из трёх способов (`docs/roadmap.md`, M2) — SDK не знает и не должен знать, как именно он был получен. */
