@@ -3,11 +3,17 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         defaultTestSuite="unit"
          failOnWarning="true"
          failOnDeprecation="true">
     <testsuites>
         <testsuite name="unit">
             <directory suffix="Test.php">tests/</directory>
+            <exclude>tests/Integration/</exclude>
+        </testsuite>
+        <!-- Real API calls, credentials from the environment (see tests/Integration/IntegrationTestCase.php). -->
+        <testsuite name="integration">
+            <directory suffix="Test.php">tests/Integration/</directory>
         </testsuite>
     </testsuites>
 

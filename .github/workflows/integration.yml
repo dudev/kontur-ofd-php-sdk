@@ -1,0 +1,47 @@
+name: Integration
+
+# Real calls to the Kontur.OFD test site (https://ofd-project.kontur.ru:11002 by default).
+# Not part of the regular CI: needs integrator credentials, which forks and most PRs don't have.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration
+  cancel-in-progress: false
+
+jobs:
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    env:
+      KONTUR_OFD_API_KEY: ${{ secrets.KONTUR_OFD_API_KEY }}
+      KONTUR_OFD_LOGIN: ${{ secrets.KONTUR_OFD_LOGIN }}
+      KONTUR_OFD_PASSWORD: ${{ secrets.KONTUR_OFD_PASSWORD }}
+      KONTUR_OFD_DATA_BASE_URI: ${{ vars.KONTUR_OFD_DATA_BASE_URI }}
+    steps:
+      - name: Check credentials
+        id: credentials
+        run: |
+          if [ -n "$KONTUR_OFD_API_KEY" ] && [ -n "$KONTUR_OFD_LOGIN" ] && [ -n "$KONTUR_OFD_PASSWORD" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::KONTUR_OFD_API_KEY/KONTUR_OFD_LOGIN/KONTUR_OFD_PASSWORD secrets are not set, skipping."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.credentials.outputs.present == 'true'
+        uses: actions/checkout@v4
+      - if: steps.credentials.outputs.present == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: none
+      - if: steps.credentials.outputs.present == 'true'
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - if: steps.credentials.outputs.present == 'true'
+        run: vendor/bin/phpunit --testsuite integration --display-skipped
