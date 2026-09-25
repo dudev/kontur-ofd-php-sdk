@@ -9,11 +9,4 @@
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore"/>
         <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine"/>
     </rule>
-    <rule ref="Generic.Files.LineLength">
-        <properties>
-            <!-- Without iconv (the MegaLinter image) phpcs measures lines in bytes, so Cyrillic
-                 comments hit the limit at ~60 characters. The limit still applies to code. -->
-            <property name="ignoreComments" value="true"/>
-        </properties>
-    </rule>
 </ruleset>
