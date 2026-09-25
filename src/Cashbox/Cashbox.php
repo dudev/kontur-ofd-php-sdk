@@ -47,7 +47,10 @@ final readonly class Cashbox
             lastDocumentTimestamp: Hydrator::nullableString($data, 'lastDocumentTimestamp'),
             lastCashReceiptTimestamp: Hydrator::nullableString($data, 'lastCashReceiptTimestamp'),
             fiscalDrive: is_array($fiscalDriveData) ? FiscalDrive::fromArray(Hydrator::object($fiscalDriveData)) : null,
-            fiscalDrives: array_map(FiscalDrive::fromArray(...), Hydrator::listOfObjects($data['fiscalDrives'] ?? null)),
+            fiscalDrives: array_map(
+                FiscalDrive::fromArray(...),
+                Hydrator::listOfObjects($data['fiscalDrives'] ?? null),
+            ),
             salesPointName: Hydrator::nullableString($data, 'salesPointName'),
             permissionFrom: Hydrator::nullableString($data, 'permissionFrom'),
             permissionTo: Hydrator::nullableString($data, 'permissionTo'),

@@ -72,7 +72,9 @@ final class DocumentsApiTest extends TestCase
         ]));
         $api = new DocumentsApi($this->makeTransport($mockClient));
 
-        $documents = iterator_to_array($api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()));
+        $documents = iterator_to_array(
+            $api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()),
+        );
 
         self::assertCount(1, $documents);
         self::assertCount(2, $mockClient->getRequests());
@@ -97,7 +99,9 @@ final class DocumentsApiTest extends TestCase
         ]));
         $api = new DocumentsApi($this->makeTransport($mockClient));
 
-        $documents = iterator_to_array($api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()));
+        $documents = iterator_to_array(
+            $api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()),
+        );
 
         self::assertCount(1, $documents);
         self::assertCount(3, $mockClient->getRequests());
@@ -111,7 +115,9 @@ final class DocumentsApiTest extends TestCase
         ]));
         $api = new DocumentsApi($this->makeTransport($mockClient));
 
-        $documents = iterator_to_array($api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()));
+        $documents = iterator_to_array(
+            $api->byPeriodAll('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable()),
+        );
 
         self::assertCount(1, $documents);
         self::assertCount(1, $mockClient->getRequests());

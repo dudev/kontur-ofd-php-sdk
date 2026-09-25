@@ -91,8 +91,13 @@ final class Transport
      * @param array<string, string> $query
      * @return array<array-key, mixed>
      */
-    private function request(string $method, string $uri, array $query, ?string $body = null, bool $requiresAuth = true): array
-    {
+    private function request(
+        string $method,
+        string $uri,
+        array $query,
+        ?string $body = null,
+        bool $requiresAuth = true,
+    ): array {
         if ($query !== []) {
             $uri .= (str_contains($uri, '?') ? '&' : '?') . http_build_query($query);
         }
@@ -104,7 +109,8 @@ final class Transport
         if ($requiresAuth) {
             if ($this->sid === null) {
                 throw new AuthenticationException(
-                    'No auth.sid is set — authenticate first (AuthClient) or provide one via Transport::setSid()/KonturOfdClient::withSid().',
+                    'No auth.sid is set — authenticate first (AuthClient) or provide one via '
+                    . 'Transport::setSid()/KonturOfdClient::withSid().',
                 );
             }
 
@@ -120,7 +126,10 @@ final class Transport
         try {
             $response = $this->httpClient->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
-            throw new KonturOfdException('HTTP transport error calling Kontur.OFD API: ' . $e->getMessage(), previous: $e);
+            throw new KonturOfdException(
+                'HTTP transport error calling Kontur.OFD API: ' . $e->getMessage(),
+                previous: $e,
+            );
         }
 
         return $this->parseResponse($response);

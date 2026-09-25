@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="kontur-ofd-php-sdk">
+    <description>PSR12.</description>
+    <file>src</file>
+    <file>tests</file>
+    <rule ref="PSR12"/>
+</ruleset>

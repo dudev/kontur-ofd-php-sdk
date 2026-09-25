@@ -20,7 +20,8 @@ final readonly class Receipt implements Document
 {
     /**
      * @param list<ReceiptItem> $items
-     * @param array<string, int> $ndsBreakdown ключ — `nds20`/`nds18`/.../`ndsCalculated22`, значение — сумма в копейках; только непустые ставки
+     * @param array<string, int> $ndsBreakdown ключ — `nds20`/`nds18`/.../`ndsCalculated22`,
+     *                                         значение — сумма в копейках; только непустые ставки
      * @param array<string, mixed> $rawData
      */
     public function __construct(

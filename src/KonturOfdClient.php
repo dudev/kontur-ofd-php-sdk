@@ -39,7 +39,15 @@ final class KonturOfdClient
         ?RequestFactoryInterface $requestFactory = null,
         ?StreamFactoryInterface $streamFactory = null,
     ) {
-        $this->transport = new Transport($authBaseUri, $dataBaseUri, $apiKey, $sid, $httpClient, $requestFactory, $streamFactory);
+        $this->transport = new Transport(
+            $authBaseUri,
+            $dataBaseUri,
+            $apiKey,
+            $sid,
+            $httpClient,
+            $requestFactory,
+            $streamFactory,
+        );
         $this->auth = new AuthClient($this->transport);
         $this->organizations = new OrganizationsApi($this->transport);
         $this->cashboxes = new CashboxesApi($this->transport);

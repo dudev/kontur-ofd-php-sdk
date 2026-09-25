@@ -34,7 +34,11 @@ final readonly class AuthClient
      */
     public function authenticateByCert(string $certificateBase64): EncryptedKeyResult
     {
-        $response = $this->transport->postToAuthHost('/auth/authenticate-by-cert', $certificateBase64, ['free' => 'false']);
+        $response = $this->transport->postToAuthHost(
+            '/auth/authenticate-by-cert',
+            $certificateBase64,
+            ['free' => 'false'],
+        );
 
         $link = $response['Link'] ?? null;
         $href = is_array($link) && is_string($link['Href'] ?? null) ? $link['Href'] : '';
@@ -66,7 +70,9 @@ final readonly class AuthClient
     {
         $value = $response[$key] ?? null;
         if (!is_string($value) || $value === '') {
-            throw new \UnexpectedValueException(sprintf('Expected a non-empty string "%s" in Kontur.OFD response', $key));
+            throw new \UnexpectedValueException(
+                sprintf('Expected a non-empty string "%s" in Kontur.OFD response', $key),
+            );
         }
 
         return $value;
