@@ -1,11 +1,11 @@
 # kontur-ofd-php-sdk
 
 PHP SDK for the [Kontur.OFD API](https://docs-ofd-api.kontur.ru/) — organizations, cashboxes,
-fiscal documents (receipts/BSO), auth.
+fiscal documents (receipts/BSO), receipt statistics, auth.
 
-Status: M1–M4 implemented (transport, auth primitives, organizations, cashboxes, documents with
-typed `Receipt`/generic fallback and generator-based pagination). Statistics (M5) not implemented
-yet. See `docs/roadmap.md` for scope and open questions.
+Status: M1–M5 implemented (transport, auth primitives, organizations, cashboxes, documents with
+typed `Receipt`/generic fallback and generator-based pagination, receipt statistics by days/shifts).
+See `docs/roadmap.md` for scope and open questions.
 
 ## Installation
 
@@ -35,6 +35,11 @@ foreach ($client->organizations()->list() as $organization) {
             // $document is a Receipt for receipt/bso types, GenericDocument otherwise
         }
     }
+}
+
+// Aggregated receipt totals (kopeks) by day / by shift, dates inclusive
+foreach ($client->statistics()->cashboxByDays($organizationId, $kktRegId, $from, $to) as $day) {
+    echo $day->date, ': ', $day->sell->totalKopeks - $day->returnSell->totalKopeks, PHP_EOL;
 }
 ```
 
