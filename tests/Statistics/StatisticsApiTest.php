@@ -65,6 +65,8 @@ final class StatisticsApiTest extends TestCase
         self::assertSame(166, $days[0]->sell->count);
         self::assertSame(1029913, $days[0]->sell->ndsBreakdown['rate20']);
         self::assertSame(0, $days[0]->sell->ndsBreakdown['calculatedWithRate10']);
+        self::assertSame(0, $days[0]->sell->ndsBreakdown['rate22']);
+        self::assertCount(12, $days[0]->sell->ndsBreakdown);
         self::assertSame(97681, $days[0]->returnSell->ndsBreakdown['rate20']);
         self::assertSame(14, $days[0]->buy->count);
         self::assertSame(169522, $days[0]->returnBuy->totalKopeks);
@@ -72,19 +74,19 @@ final class StatisticsApiTest extends TestCase
         self::assertSame(17, $days[1]->returnSell->count);
     }
 
-    public function testNdsBreakdownKeepsRatesMissingFromDocumentation(): void
+    public function testNdsBreakdownKeepsRatesUnknownToSdk(): void
     {
         $mockClient = $this->makeMockClient();
         $mockClient->addResponse($this->jsonResponse(200, [
             'items' => [
-                ['date' => '2026-01-10', 'sell' => ['total' => 12200, 'nds' => ['rate22' => 2200, 'rate5' => 0]]],
+                ['date' => '2026-01-10', 'sell' => ['total' => 12200, 'nds' => ['rate25' => 2200, 'rate5' => 0]]],
             ],
         ]));
         $api = new StatisticsApi($this->makeTransport($mockClient));
 
         $days = $api->cashboxByDays('org-id', 'kkt-id', new \DateTimeImmutable(), new \DateTimeImmutable());
 
-        self::assertSame(['rate22' => 2200, 'rate5' => 0], $days[0]->sell->ndsBreakdown);
+        self::assertSame(['rate25' => 2200, 'rate5' => 0], $days[0]->sell->ndsBreakdown);
     }
 
     public function testMissingOperationBlocksBecomeZeros(): void
@@ -207,6 +209,12 @@ final class StatisticsApiTest extends TestCase
                 'calculatedWithRate18' => 0,
                 'rate20' => $rate20,
                 'calculatedWithRate20' => 0,
+                'rate22' => 0,
+                'calculatedWithRate22' => 0,
+                'rate5' => 0,
+                'calculatedWithRate5' => 0,
+                'rate7' => 0,
+                'calculatedWithRate7' => 0,
             ],
         ];
     }

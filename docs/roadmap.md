@@ -85,8 +85,8 @@ SDK не реализует GOST-крипто и не решает, откуда
 
 ## ~~M5~~. Статистика — реализовано
 
-Готовые агрегаты по чекам (БСО), `GET .../statistics/cash-receipt/*` (`http/cashboxes-statistics-*.rst`,
-`http/organizations-statistics-by-days.rst`). relsy они пока не нужны (там — сами документы), но
+Готовые агрегаты по чекам (БСО), `GET .../statistics/cash-receipt/*` (`http/cashboxes-statistics-*`,
+`http/organizations-statistics-by-days` на `docs-ofd-api.kontur.ru`). relsy они пока не нужны (там — сами документы), но
 методов всего три и форма ответа простая, поэтому сделаны, чтобы SDK покрывал API v2 целиком.
 
 - `StatisticsApi::cashboxByDays(organizationId, kktRegId, dateFrom, dateTo): DayStatistics[]`,
@@ -95,8 +95,9 @@ SDK не реализует GOST-крипто и не решает, откуда
   включительно), время у `DateTimeImmutable` отбрасывается.
 - `DayStatistics`/`ShiftStatistics` — по `OperationTotals` на каждый признак расчёта
   (`sell`/`returnSell`/`buy`/`returnBuy`): суммы в копейках, количество чеков, блок `nds` как
-  `ndsBreakdown` (ключи API как есть — `rate20`, `calculatedWithRate20`, ...). Документация (2022)
-  перечисляет только ставки 10/18/20, поэтому набор ставок не зашит — 22/7/5 придут без правок SDK.
+  `ndsBreakdown` (ключи API как есть — `rate20`, `calculatedWithRate20`, ...). Набор ставок не
+  зашит: сейчас документированы 5/7/10/18/20/22 (в зеркале `skbkontur/ofd-api-docs` от 2022 года
+  — только 10/18/20), следующая новая ставка придёт без правок SDK.
 - `organizationByDays()` доступен только интегратору с доступом ко всем кассам организации (в том
   числе будущим) — иначе ошибка доступа, `AccessDeniedException` (M1).
 - Особенности API, которые SDK не сглаживает: дня без смен и чеков в ответе нет вовсе (день со
