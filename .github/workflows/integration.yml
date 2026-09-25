@@ -39,7 +39,7 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.credentials.outputs.present == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - if: steps.credentials.outputs.present == 'true'
         uses: shivammathur/setup-php@v2
         with:
@@ -51,7 +51,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
       - if: steps.credentials.outputs.present == 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
