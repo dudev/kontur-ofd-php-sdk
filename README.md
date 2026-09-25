@@ -66,3 +66,8 @@ In GitHub Actions the same suite runs from the `Integration` workflow (on push t
 requests, manually and weekly) with
 `KONTUR_OFD_API_KEY`/`KONTUR_OFD_LOGIN`/`KONTUR_OFD_PASSWORD` repository secrets and an optional
 `KONTUR_OFD_DATA_BASE_URI` variable; without the secrets it does nothing.
+
+`docs/api-reference/` holds a verbatim copy of the upstream docs sources (`.rst`), refreshed by
+`bin/sync-api-docs.sh`. The `API docs watch` workflow runs it daily and, when the docs change,
+opens a pull request from the `api-docs-update` branch with the diff (an issue if Actions aren't
+allowed to create pull requests in the repository settings).

@@ -1,0 +1,79 @@
+name: API docs watch
+
+# Daily re-download of the Kontur.OFD API docs sources (bin/sync-api-docs.sh) into
+# docs/api-reference/. If anything changed, the snapshot is pushed to the api-docs-update branch
+# and a pull request is opened (or the open one is updated): its diff is the docs change, merging
+# it makes the new version the baseline. If Actions may not create pull requests in this repo
+# (Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests"),
+# an issue with a link to the branch is opened instead.
+on:
+  schedule:
+    - cron: "43 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: api-docs-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Check docs-ofd-api.kontur.ru for changes
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: api-docs-update
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download current docs
+        run: bin/sync-api-docs.sh
+
+      - name: Detect changes
+        id: changes
+        run: |
+          git add --all docs/api-reference
+          if git diff --cached --quiet; then
+            echo "::notice::API docs are unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git diff --cached --stat
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push snapshot and open pull request
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git switch --create "$BRANCH"
+          git commit --quiet --message "Обновление документации API Контур.ОФД"
+          git push --force origin "$BRANCH"
+
+          {
+            echo "Изменилась документация API Контур.ОФД (https://docs-ofd-api.kontur.ru/)."
+            echo "Проверить, не затрагивает ли это SDK; после мерджа снимок станет новой точкой сравнения."
+            echo
+            echo '```'
+            git diff --stat HEAD~1 HEAD
+            echo '```'
+          } > body.md
+
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            echo "::notice::Open pull request for $BRANCH updated."
+          elif gh pr create --head "$BRANCH" --base "${{ github.event.repository.default_branch }}" \
+              --title "Изменилась документация API Контур.ОФД" --body-file body.md; then
+            :
+          else
+            echo "::warning::Could not open a pull request, opening an issue instead."
+            title="Изменилась документация API Контур.ОФД"
+            if [ -z "$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[].number')" ]; then
+              echo >> body.md
+              echo "Дифф: ${{ github.server_url }}/${{ github.repository }}/compare/${{ github.event.repository.default_branch }}...$BRANCH" >> body.md
+              gh issue create --title "$title" --body-file body.md
+            fi
+          fi
