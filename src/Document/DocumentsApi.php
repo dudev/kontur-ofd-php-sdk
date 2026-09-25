@@ -9,7 +9,9 @@ use Dudev\KonturOfdPhpSdk\Internal\Hydrator;
 
 final readonly class DocumentsApi
 {
-    public function __construct(private Transport $transport) {}
+    public function __construct(private Transport $transport)
+    {
+    }
 
     /**
      * Одна страница `documents/by-period` (`http/documents-by-period.rst`). `limit` по умолчанию
@@ -31,7 +33,7 @@ final readonly class DocumentsApi
             'dateTo' => $dateTo->format('Y-m-d\TH:i:s'),
         ];
         if ($types !== []) {
-            $query['types'] = implode(',', array_map(static fn(DocumentType $type): string => $type->value, $types));
+            $query['types'] = implode(',', array_map(static fn (DocumentType $type): string => $type->value, $types));
         }
         if ($offset !== null) {
             $query['offset'] = $offset;

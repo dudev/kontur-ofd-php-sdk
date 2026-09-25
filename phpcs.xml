@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="kontur-ofd-php-sdk">
-    <description>PSR12, reconciled with php-cs-fixer's @PER-CS.</description>
+    <description>PSR12.</description>
     <file>src</file>
     <file>tests</file>
-    <rule ref="PSR12">
-        <!-- PER-CS writes empty bodies as `{}` on one line; PSR12 wants the braces on separate lines. -->
-        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine"/>
-        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore"/>
-        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine"/>
-    </rule>
+    <rule ref="PSR12"/>
 </ruleset>

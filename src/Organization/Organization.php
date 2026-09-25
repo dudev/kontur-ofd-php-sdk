@@ -16,7 +16,8 @@ final readonly class Organization
         public string $ogrn,
         public string $shortName,
         public string $fullName,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self

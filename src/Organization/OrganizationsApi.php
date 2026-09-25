@@ -9,7 +9,9 @@ use Dudev\KonturOfdPhpSdk\Internal\Hydrator;
 
 final readonly class OrganizationsApi
 {
-    public function __construct(private Transport $transport) {}
+    public function __construct(private Transport $transport)
+    {
+    }
 
     /**
      * Все организации, доступные по ключу интегратора (`http/organizations.rst`). Пустой список —

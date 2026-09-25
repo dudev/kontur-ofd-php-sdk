@@ -12,7 +12,8 @@ final readonly class FiscalDrive
     public function __construct(
         public string $fiscalDriverNumber,
         public ?string $earliestDocumentTimestamp,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self

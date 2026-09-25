@@ -10,5 +10,6 @@ final readonly class AuthResult
     public function __construct(
         public string $sid,
         public ?string $refreshToken = null,
-    ) {}
+    ) {
+    }
 }

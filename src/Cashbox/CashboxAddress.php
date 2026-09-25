@@ -12,7 +12,8 @@ final readonly class CashboxAddress
     public function __construct(
         public string $address,
         public ?string $startDate,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self

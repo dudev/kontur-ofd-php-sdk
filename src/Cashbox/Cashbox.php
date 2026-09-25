@@ -28,7 +28,8 @@ final readonly class Cashbox
         public ?string $salesPointName,
         public ?string $permissionFrom,
         public ?string $permissionTo,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self

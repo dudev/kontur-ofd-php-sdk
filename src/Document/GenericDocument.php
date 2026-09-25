@@ -11,7 +11,8 @@ final readonly class GenericDocument implements Document
     public function __construct(
         private DocumentType $type,
         private array $rawData,
-    ) {}
+    ) {
+    }
 
     public function getType(): DocumentType
     {

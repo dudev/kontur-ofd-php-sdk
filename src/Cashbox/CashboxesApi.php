@@ -9,7 +9,9 @@ use Dudev\KonturOfdPhpSdk\Internal\Hydrator;
 
 final readonly class CashboxesApi
 {
-    public function __construct(private Transport $transport) {}
+    public function __construct(private Transport $transport)
+    {
+    }
 
     /**
      * Все кассы организации, доступные интегратору (`http/cashboxes.rst`).

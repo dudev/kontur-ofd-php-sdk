@@ -15,7 +15,9 @@ use Dudev\KonturOfdPhpSdk\Http\Transport;
  */
 final readonly class AuthClient
 {
-    public function __construct(private Transport $transport) {}
+    public function __construct(private Transport $transport)
+    {
+    }
 
     /** Пароль передаётся в теле запроса как есть (не JSON) — так же, как в `Auth/authenticate-by-pass.rst`. */
     public function authenticateByPass(string $login, string $password): AuthResult

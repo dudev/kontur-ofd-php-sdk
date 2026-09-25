@@ -11,7 +11,7 @@ DISABLE_LINTERS:
   # PHPStan (level 9) runs in ci.yml after composer install; Psalm would duplicate it.
   - PHP_PHPSTAN
   - PHP_PSALM
-  # Code style is checked by the `code-style` job in ci.yml (phpcs.xml, .php-cs-fixer.dist.php).
+  # Code style (PSR12, phpcs.xml) is checked by the `code-style` job in ci.yml.
   - PHP_PHPCS
   - PHP_PHPCSFIXER
   # Scans lockfiles/installed packages, but composer.lock is gitignored and MegaLinter

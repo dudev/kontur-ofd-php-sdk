@@ -11,5 +11,6 @@ final readonly class DocumentsPage
     public function __construct(
         public array $documents,
         public ?string $nextOffset,
-    ) {}
+    ) {
+    }
 }
