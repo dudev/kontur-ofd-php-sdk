@@ -62,6 +62,7 @@ export KONTUR_OFD_LOGIN=... KONTUR_OFD_PASSWORD=...   # or KONTUR_OFD_SID=... in
 vendor/bin/phpunit --testsuite integration --display-skipped
 ```
 
-In GitHub Actions the same suite runs from the `Integration` workflow (manually or weekly) with
+In GitHub Actions the same suite runs from the `Integration` workflow (on push to `main`, on pull
+requests, manually and weekly) with
 `KONTUR_OFD_API_KEY`/`KONTUR_OFD_LOGIN`/`KONTUR_OFD_PASSWORD` repository secrets and an optional
 `KONTUR_OFD_DATA_BASE_URI` variable; without the secrets it does nothing.

@@ -1,8 +1,12 @@
 name: Integration
 
 # Real calls to the Kontur.OFD test site (https://ofd-project.kontur.ru:11002 by default).
-# Not part of the regular CI: needs integrator credentials, which forks and most PRs don't have.
+# Needs integrator credentials from repository secrets; PRs from forks don't get them, so there
+# the job only logs a notice and succeeds.
 on:
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: "17 5 * * 1"
@@ -11,8 +15,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: integration
-  cancel-in-progress: false
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   integration:
