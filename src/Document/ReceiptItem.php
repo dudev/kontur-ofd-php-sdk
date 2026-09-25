@@ -25,8 +25,7 @@ final readonly class ReceiptItem
         public int $sumKopeks,
         public ?string $ndsType,
         public array $rawData,
-    ) {
-    }
+    ) {}
 
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self

@@ -8,6 +8,11 @@ concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  # GitHub Comment Reporter posts the summary on pull requests.
+  pull-requests: write
+
 jobs:
   megalinter:
     name: MegaLinter

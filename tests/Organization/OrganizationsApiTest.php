@@ -22,7 +22,8 @@ final class OrganizationsApiTest extends TestCase
                 'kpp' => '669901001',
                 'ogrn' => '000000000000000',
                 'shortName' => 'ООО Тестовая организация',
-                'fullName' => 'Общество с органиченной ответственностью Тестовая организация',
+                'fullName' => 'Общество с органиченной ответственностью '
+                    . 'Тестовая организация',
             ],
         ]));
         $api = new OrganizationsApi($this->makeTransport($mockClient));

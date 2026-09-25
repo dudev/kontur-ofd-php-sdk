@@ -47,8 +47,7 @@ final readonly class Receipt implements Document
         public int $fiscalSign,
         public array $ndsBreakdown,
         public array $rawData,
-    ) {
-    }
+    ) {}
 
     public function getType(): DocumentType
     {

@@ -14,6 +14,5 @@ final readonly class EncryptedKeyResult
     public function __construct(
         public string $encryptedKey,
         public string $approveCertUrl,
-    ) {
-    }
+    ) {}
 }

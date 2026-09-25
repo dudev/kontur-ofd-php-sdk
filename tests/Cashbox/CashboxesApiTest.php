@@ -22,7 +22,10 @@ final class CashboxesApiTest extends TestCase
                 'address' => 'г. Екатеринбург. ул. Малопрудная 5',
                 'addresses' => [
                     ['address' => 'г.Москва Ул. победы д522', 'startDate' => '2019-09-12T00:00:00'],
-                    ['address' => 'г. Екатеринбург. ул. Малопрудная 5', 'startDate' => '2020-01-19T00:00:00'],
+                    [
+                        'address' => 'г. Екатеринбург. ул. Малопрудная 5',
+                        'startDate' => '2020-01-19T00:00:00',
+                    ],
                 ],
                 'name' => 'Касса 1',
                 'modelName' => 'АТОЛ 30Ф',
@@ -76,7 +79,12 @@ final class CashboxesApiTest extends TestCase
     public function testGetBuildsCorrectPath(): void
     {
         $mockClient = $this->makeMockClient();
-        $mockClient->addResponse($this->jsonResponse(200, ['regNumber' => 'X', 'serialNumber' => 'Y', 'name' => 'Касса', 'modelName' => 'M']));
+        $mockClient->addResponse($this->jsonResponse(200, [
+            'regNumber' => 'X',
+            'serialNumber' => 'Y',
+            'name' => 'Касса',
+            'modelName' => 'M',
+        ]));
         $api = new CashboxesApi($this->makeTransport($mockClient));
 
         $api->get('org-id', 'X');

@@ -55,7 +55,25 @@ final class DocumentFactoryTest extends TestCase
     public function testBsoWrapperIsAlsoParsedAsReceipt(): void
     {
         $document = DocumentFactory::fromWrappedArray([
-            'bso' => ['id' => 'x', 'user' => 'y', 'userInn' => 'z', 'requestNumber' => 1, 'dateTime' => 'd', 'shiftNumber' => 1, 'operationType' => 1, 'taxationType' => 1, 'operator' => 'o', 'kktRegId' => 'k', 'fiscalDriveNumber' => 'f', 'items' => [], 'totalSum' => 0, 'cashTotalSum' => 0, 'ecashTotalSum' => 0, 'fiscalDocumentNumber' => 1, 'fiscalSign' => 1],
+            'bso' => [
+                'id' => 'x',
+                'user' => 'y',
+                'userInn' => 'z',
+                'requestNumber' => 1,
+                'dateTime' => 'd',
+                'shiftNumber' => 1,
+                'operationType' => 1,
+                'taxationType' => 1,
+                'operator' => 'o',
+                'kktRegId' => 'k',
+                'fiscalDriveNumber' => 'f',
+                'items' => [],
+                'totalSum' => 0,
+                'cashTotalSum' => 0,
+                'ecashTotalSum' => 0,
+                'fiscalDocumentNumber' => 1,
+                'fiscalSign' => 1,
+            ],
         ]);
 
         self::assertInstanceOf(Receipt::class, $document);

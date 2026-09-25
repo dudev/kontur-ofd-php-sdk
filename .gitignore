@@ -3,3 +3,4 @@
 /.phpunit.cache/
 /.phpunit.result.cache
 /megalinter-reports/
+/.php-cs-fixer.cache

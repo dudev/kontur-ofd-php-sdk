@@ -6,4 +6,14 @@ DISABLE:
   - SPELL
   # Low value on a small, young repo — mostly flags intentionally similar test fixtures.
   - COPYPASTE
+DISABLE_LINTERS:
+  # Need vendor/ (autoloader, phpstan-phpunit extension), which MegaLinter doesn't install.
+  # PHPStan (level 9) runs in ci.yml after composer install; Psalm would duplicate it.
+  - PHP_PHPSTAN
+  - PHP_PSALM
+  # Scans lockfiles/installed packages, but composer.lock is gitignored and MegaLinter
+  # doesn't install vendor/, so there is nothing for it to scan; on top of that its
+  # vulnerability DB fails to load in the v8 image. Dependencies are checked by
+  # `composer audit` in ci.yml against the resolved set.
+  - REPOSITORY_GRYPE
 PRINT_ALPACA: false
