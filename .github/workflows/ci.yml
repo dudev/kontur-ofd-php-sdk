@@ -25,11 +25,13 @@ jobs:
     name: composer audit
     runs-on: ubuntu-latest
     needs: composer-validate
+    env:
+      PHP_VERSION: "8.2"
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
       - name: Get Composer cache directory
         id: composer-cache
@@ -37,9 +39,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          # composer.lock is not committed, so key on composer.json; downloaded dists don't depend on the PHP version.
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.json') }}
-          restore-keys: composer-${{ runner.os }}-
+          # composer.lock is not committed, so key on composer.json.
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
       - run: composer install --no-interaction --no-progress --prefer-dist
       # Uses the FriendsOfPHP/security-advisories database (built into Composer since 2.4).
       - run: composer audit
@@ -60,11 +62,13 @@ jobs:
     name: PHPStan
     runs-on: ubuntu-latest
     needs: composer-validate
+    env:
+      PHP_VERSION: "8.2"
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
       - name: Get Composer cache directory
         id: composer-cache
@@ -72,9 +76,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          # composer.lock is not committed, so key on composer.json; downloaded dists don't depend on the PHP version.
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.json') }}
-          restore-keys: composer-${{ runner.os }}-
+          # composer.lock is not committed, so key on composer.json.
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: vendor/bin/phpstan analyse --no-progress
 
@@ -98,8 +102,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          # composer.lock is not committed, so key on composer.json; downloaded dists don't depend on the PHP version.
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.json') }}
-          restore-keys: composer-${{ runner.os }}-
+          # composer.lock is not committed, so key on composer.json.
+          key: composer-${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-php${{ matrix.php }}-
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: vendor/bin/phpunit
